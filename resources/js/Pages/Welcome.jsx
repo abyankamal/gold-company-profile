@@ -1,4 +1,4 @@
-import { Link, Head } from "@inertiajs/react";
+import { Link, Head, useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -18,6 +18,26 @@ const navigation = [
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const { data, setData, post, errors, processing, recentlySuccessful } =
+        useForm({
+            name: "",
+            email: "",
+            message: "",
+        });
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route("sendemail"), {
+            preserveScroll: true,
+            onSuccess: () => {
+                alert("Email Sucess Sent!");
+            },
+            onError: (errors) => {
+                console.log("errors");
+            },
+        });
+    };
 
     // const handleImageError = () => {
     //     document
@@ -75,13 +95,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                     ))}
                                 </div>
                                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                                    <a
-                                        href="#"
+                                    <Link
+                                        href={route("login")}
                                         className="text-sm font-semibold leading-6 text-gray-900"
                                     >
                                         Log in{" "}
                                         <span aria-hidden="true">&rarr;</span>
-                                    </a>
+                                    </Link>
                                 </div>
                             </nav>
                             <Dialog
@@ -290,17 +310,28 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                 >
                                     Intrested ? Please Contact Us
                                 </h3>
-                                <form id="contact-form" method="post">
+                                <form
+                                    id="contact-form"
+                                    onSubmit={submit}
+                                    method="post"
+                                >
                                     <div className="bg-white rounded-lg shadow-2xl mb-10 py-4 px-10 lg:w-1/2">
                                         <div className="mb-4">
                                             <label className="block text-left text-sm font-medium leading-6 text-gray-900">
-                                                First Name
+                                                Name
                                             </label>
                                             <div className="mt-2">
                                                 <input
                                                     type="text"
                                                     name="name"
                                                     id="name"
+                                                    value={data.name}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "name",
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     className="block w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                     placeholder="First Name"
                                                 />
@@ -314,6 +345,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                                 <input
                                                     type="email"
                                                     name="email"
+                                                    value={data.email}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "email",
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     id="email"
                                                     className="block w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                     placeholder="you@example.com"
@@ -328,6 +366,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                                 <textarea
                                                     name="message"
                                                     id="message"
+                                                    value={data.message}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "message",
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Message"
                                                     className="block w-full rounded-md border-0 px-4 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                 ></textarea>
